@@ -1,0 +1,75 @@
+.container {
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+  
+  .menu {
+    width: 100%;
+    margin-bottom: 20px;
+    margin-left: 40%;
+    
+  }
+  
+  .content {
+    display: flex;
+  }
+  
+  
+  
+  .canvas-section {
+    margin-left: 215px;
+    
+  }
+
+  .table-section {
+    margin-top: 0px;
+    overflow-y: auto;
+    
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #ccc;
+  }
+  
+  th, td {
+    padding: 30px; 
+    text-align: center;
+    border: 1px solid #ccc;
+    font-size: 16px; 
+  }
+  
+  th {
+    background-color: #000000;
+  }
+  
+  .input-container {
+    margin-bottom: 5px;
+  }
+  
+  .input-container label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .input-container input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    
+    box-sizing: border-box; 
+  }
+  
+  .input-container select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    
+    box-sizing: border-box;
+  }
+  
