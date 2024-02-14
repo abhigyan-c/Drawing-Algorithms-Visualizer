@@ -1,5 +1,5 @@
 .container {
-    
+   
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -8,12 +8,18 @@
   }
   
   .menu {
-    width: 100%;
-    margin-bottom: 20px;
-    margin-left: 40%;
-    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
+  .input-group {
+    margin-bottom: 10px;
+  }
+  
+  .input-group label {
+    margin-right: 15px;
+  }
   .content {
     display: flex;
   }
@@ -21,24 +27,29 @@
   
   
   .canvas-section {
-    margin-left: 215px;
+    margin-left: -10%;
     
+  }
+  
+  .stage{
+    background-color: white;
   }
 
   .table-section {
     margin-top: 0px;
     overflow-y: auto;
-    
+    margin-left: 20px;
   }
   
   table {
     width: 100%;
     border-collapse: collapse;
     border: 2px solid #ccc;
+    
   }
   
   th, td {
-    padding: 30px; 
+    padding: 1em; 
     text-align: center;
     border: 1px solid #ccc;
     font-size: 16px; 
