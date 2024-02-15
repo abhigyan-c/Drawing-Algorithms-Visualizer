@@ -6,9 +6,10 @@ import { Stage, Layer, Line, Circle, Text } from "react-konva";
 
 const gridSize = 15; // Size of each grid square
 const gridColor = 'lightgrey';
-const canvasWidth = 1106;
+const canvasWidth = 1200;
 const canvasHeight = 1200;
 let tablePoints = [];
+
 const Gridlines = () => {
   const lines = [];
 
@@ -23,7 +24,7 @@ const Gridlines = () => {
   }
 
   return <>{lines}</>;
-};
+}; 
 
 function ddaLine(x1, y1, x2, y2) {
   const dx = x2 - x1;
@@ -38,7 +39,7 @@ function ddaLine(x1, y1, x2, y2) {
   tablePoints.length = 0;
   for (let i = 0; i <= steps; i++) {
     tablePoints.push({x: Math.round(x), y: Math.round(y)});
-    points.push({ x: Math.round(x * 10), y: Math.round(y * 10) });
+    points.push({ x: Math.round(x * 10) + (canvasWidth / 2), y: Math.round(-y * 10) + (canvasHeight/2) });
     x += xIncrement;
     y += yIncrement;
   }
@@ -57,7 +58,7 @@ function bresenhamLine(x1, y1, x2, y2) {
   tablePoints.length = 0;
   while(x <= x2) {
     tablePoints.push({x: x, y: y});
-    points.push({x: x * 10, y: y * 10});
+    points.push({x: x * 10 + (canvasWidth / 2), y: -y * 10 + (canvasHeight/2)});
     x++;
     if(p <= 0)
       p = p + (2 * dy);
@@ -67,6 +68,30 @@ function bresenhamLine(x1, y1, x2, y2) {
     }
   }
   console.log(points)
+  return points;
+}
+
+
+function midPointLine(x1, y1, x2, y2) {
+  let x = x1;
+  let y = y1;
+  const dx = Math.abs(x2 - x1);
+  const dy = Math.abs(y2 - y1);
+  let p = (2 * dy) - dx;
+  let points = [];
+  tablePoints.length = 0;
+  while(x <= x2) {
+    tablePoints.push({x: x, y: y});
+    points.push({x: x * 10 + (canvasWidth / 2), y: -y * 10 + (canvasHeight/2)});
+    if(p < 0) {
+      p += dy;
+    }
+    else {
+      p = p + dy - dx;
+      y++;
+    }
+    x++;
+  }
   return points;
 }
 
@@ -80,6 +105,8 @@ const LineDrawingApp = () => {
   const [animationInterval, setAnimationInterval] = useState(null);
   const [buttonPressed, setButtonPressed] = useState(false);
   const [algorithm, setAlgorithm] = useState('DDA');
+  const [scale, setScale] = useState(1); // State to keep track of the canvas scale
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     return () => {
@@ -95,6 +122,8 @@ const LineDrawingApp = () => {
     animateDrawing();
   }, [points]);
 
+  
+
   const animateDrawing = () => {
     if (!points) return; // Check if points is not null or undefined
     
@@ -108,6 +137,7 @@ const LineDrawingApp = () => {
   
     setAnimationInterval(interval);
   };
+
   
   const drawLine = () => {
     setButtonPressed(true);
@@ -124,11 +154,17 @@ const LineDrawingApp = () => {
       linePoints = ddaLine(x1, y1, x2, y2);
     } else if (algorithm === 'BresenhamLine') {
       linePoints = bresenhamLine(x1, y1, x2, y2);
+    } else if (algorithm === 'MidPointLine') {
+      linePoints = midPointLine(x1, y1, x2, y2);
     }
   
     setPoints(linePoints);
   
     animateDrawing(linePoints);
+
+    if (x1 === '' || y1 === '' || x2 === '' || y2 === '') {
+      tablePoints = [];
+    }
   };
   
 
@@ -139,6 +175,8 @@ const LineDrawingApp = () => {
       if (algorithm === "DDA") {
         circleArray = linePoints;
       } else if (algorithm === "BresenhamLine") {
+        circleArray = linePoints;
+      } else if (algorithm === "MidPointLine") {
         circleArray = linePoints;
       }
       const p = [];
@@ -153,31 +191,31 @@ const LineDrawingApp = () => {
   
   
   return (
-    <div className="container" style={{ background: 'linear-gradient(to bottom, #4b6cb7, #182848)' }}>
+    <div className="container" style={{ background: 'linear-gradient(to right, darkslategray, darkviolet)' }}>
       <h1>Line Drawing Algorithms</h1>
-      <h6>Following tool can take only positive values, origin is set to top left.</h6>
       <div className="menu">
   <div className="input-group">
     <label htmlFor="x1">X1:</label>
-    <input type="number" id="x1" value={x1} onChange={(e) => setX1(parseInt(e.target.value))} />
+    <input type="number" id="x1" value={x1} onChange={(e) => setX1(e.target.value === '' ? '' : parseInt(e.target.value))} />
   </div>
   <div className="input-group">
     <label htmlFor="y1">Y1:</label>
-    <input type="number" id="y1" value={y1} onChange={(e) => setY1(parseInt(e.target.value))} />
+    <input type="number" id="y1" value={y1} onChange={(e) => setY1(e.target.value === '' ? '' : parseInt(e.target.value))} />
   </div>
   <div className="input-group">
     <label htmlFor="x2">X2:</label>
-    <input type="number" id="x2" value={x2} onChange={(e) => setX2(parseInt(e.target.value))} />
+    <input type="number" id="x2" value={x2} onChange={(e) => setX2(e.target.value === '' ? '' : parseInt(e.target.value))} />
   </div>
   <div className="input-group">
     <label htmlFor="y2">Y2:</label>
-    <input type="number" id="y2" value={y2} onChange={(e) => setY2(parseInt(e.target.value))} />
+    <input type="number" id="y2" value={y2} onChange={(e) => setY2(e.target.value === '' ? '' : parseInt(e.target.value))} />
   </div>
   <div className="input-group">
     <label htmlFor="algo">Algorithm:</label>
     <select id="algo" value={algorithm} onChange={(e) => setAlgorithm(e.target.value)}>
       <option value="DDA">Digital Differential Analyzer</option>
       <option value="BresenhamLine">Bresenham Line Drawing Algorithm</option>
+      <option value="MidPointLine">Mid Point Line Drawing Algorithm</option>
     </select>
   </div>
         <br></br>
@@ -187,7 +225,7 @@ const LineDrawingApp = () => {
       <div className="content">
         <div className='canvas-section'>
           <Stage width={canvasWidth} height={canvasHeight} className='stage'>
-            <Layer clearBeforeDraw = {true} offsetX = {-25} offsetY = {-25}>
+            <Layer clearBeforeDraw = {true} >
               <Gridlines />
               <Line
                 x={0}
@@ -201,17 +239,19 @@ const LineDrawingApp = () => {
                 {points.length > 0 && (
                 <>
                   <Text
-                    text={`(${points[0].x / 10}, ${points[0].y / 10})`}
-                    x={points[0].x}
-                    y={points[0].y - 20}
-                    fontSize={12}
-                  />
-                  <Text
-                    text={`(${points[points.length - 1].x / 10}, ${points[points.length - 1].y / 10})`}
-                    x={points[points.length - 1].x}
-                    y={points[points.length - 1].y - 20}
-                    fontSize={12}
-                  />
+  text={`(${tablePoints.length > 0 ? tablePoints[0].x : ''}, ${tablePoints.length > 0 ? tablePoints[0].y : ''})`}
+  x={points.length > 0 ? points[0].x - 20 : 0}
+  y={points.length > 0 ? points[0].y + 10 : 0}
+  fontSize={12}
+/>
+<Text
+  text={`(${tablePoints.length > 0 ? tablePoints[tablePoints.length - 1].x : ''}, ${tablePoints.length > 0 ? tablePoints[tablePoints.length - 1].y : ''})`}
+  x={points.length > 0 ? points[points.length - 1].x : 0}
+  y={points.length > 0 ? points[points.length - 1].y - 20 : 0}
+  fontSize={12}
+/>
+
+
                 </>
               )}
                 
